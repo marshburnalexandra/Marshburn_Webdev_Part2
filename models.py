@@ -1,16 +1,15 @@
 from sqlmodel import Field , SQLModel
 
-class Survey(SQLModel, table=True):
+class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    username: str
+    password: str
 
-    trainer_name: str
-    favorite_pokemon: str
-    preferred_type: str
-    favorite_region: str
-    favorite_starter: str
-    partner_pokemon: str
-    battle_style: str
-    preferred_pokeball: str
-    favorite_game: str
-    legendary_pokemon: str
+class Pokemon(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    pokemon_name: str
+    pokemon_type: str
+    level: int
+    region: str
+    user_id: int = Field(foreign_key="user.id")
 
