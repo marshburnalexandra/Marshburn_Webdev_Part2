@@ -1,55 +1,54 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Pokemon Login</title>
-    </head>
-    <body>
+<head>
+    <title>Pokémon Trainer Login</title>
+</head>
+<body>
+    <h1>Pokémon Trainer Login</h1>
 
-        <h1>Login Account</h1>
+    <form id="loginForm">
+        <label for="username">Trainer name</label>
+        <input type="text" id="username" required>
+        <br><br>
 
-        <form id="loginForm">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+        <br><br>
 
-            <label>Username</label>
-            <input type="text" id="username" requried>
-            <br><br>
+        <button type="submit">Login</button>
+    </form>
 
-            <label>Password</label>
-            <input type="text" id="password" required>
-            <br><br>
+    <p id="message"></p>
+    <p>New trainer? <a href="/register-page">Register here</a>.</p>
 
-            <button type="submit">Login</button>
-        </form>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const message = document.getElementById("message");
 
-        <p id="message"></p>
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        username: document.getElementById("username").value,
+                        password: document.getElementById("password").value
+                    })
+                });
+                const result = await response.json();
 
-        <script>
-            document.getElementById("registerForm").addEventListener("submit", async function(event) {
-                event.preventDefault();
-
-                const username = document.getElementById("username").value;
-                const password = document.getElementById("password").value;
-                const confirm_password = document.getElementById("confirm_password").value;
-
-                if (password !== confirm_password) {
-                    document.getElementById("message").innerText = "Passwords do not match";
+                if (!result.success) {
+                    message.textContent = result.message;
                     return;
                 }
 
-                const response = await fetch("/register", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"
-                    },
-                    body:
-                    JSON.stringify({
-                        username: username,
-                        password:password
-                    })
-                });
-
-                const result = await response.json();
-                document.getElementById("message").innerText = result.message;
-
-            });
-        </script>
-    </body>
+                sessionStorage.setItem("user_id", result.user_id);
+                sessionStorage.setItem("username", result.username);
+                window.location.href = "/collection";
+            } catch (error) {
+                message.textContent = "Could not connect to the app. Make sure the server is running.";
+            }
+        });
+    </script>
+</body>
 </html>
